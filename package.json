@@ -1,0 +1,20 @@
+{
+  "name": "second_dev_backend",
+  "version": "1.0.0",
+  "description": "this is a second backend code for devsphere",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node src/app.js",
+    "dev" : "nodemon src/app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Harshit Gupta",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
