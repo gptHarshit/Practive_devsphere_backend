@@ -4,21 +4,18 @@ const User = require("./models/user");
 
 const app = express();
 
-app.post("/signup", async (req, res) => {
-  const userObj = {
-    firstName: "Roman",
-    lastName: "Reigns",
-    emailId: "roman123@gmail.com",
-    password: "roman405",
-  };
+app.use(express.json());
 
-  const user = new User(userObj);
+app.post("/signup", async (req, res) => {
+
+//console.log(req.body);
+const user = new User(req.body);
 
   try {
     await user.save();
-    res.send("User Added Successfully!!");
-  } catch (err) {
-    res.status(400).send("Error while saving the user" + err.message);
+    res.send("User Added Successfully");
+  } catch (error) {
+    res.status(400).send("Error in saving the user" + error.message);
   }
 });
 
