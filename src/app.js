@@ -61,11 +61,11 @@ app.delete("/deleteuser", async (req,res)=> {
 app.patch("/update", async (req,res)=>{
     const user_id = req.body._id;
     const data = req.body;
-    await User.findByIdAndUpdate({_id: user_id}, data);
+    await User.findByIdAndUpdate({_id: user_id}, data, { runValidators : true });
     try {
         res.send("User data updated Successfully");
     } catch (error) {
-        res.status(401).send("Unable to update the user");
+        res.status(400).send("UPDATE FAILED : " + err.message);
     }
 });
 
