@@ -10,6 +10,7 @@ app.post("/signup", async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
+    //user.CreatedAt();
     res.send("User Added Successfully");
   } catch (error) {
     res.status(400).send("Error in saving the user" + error.message);
@@ -20,8 +21,8 @@ app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
   try {
     const user = await User.find({ emailId: userEmail });
-    if(user.length === 0) {
-        res.status(404).send("User not Found");
+    if (user.length === 0) {
+      res.status(404).send("User not Found");
     }
     res.send(user);
   } catch (err) {
@@ -29,44 +30,60 @@ app.get("/user", async (req, res) => {
   }
 });
 
-app.get("/feed", async (req,res)=> {
-    const users = await User.find({});
-    try {
-        res.send(users);
-    } catch (error) {
-        res.status(404).send("Users not found");
-    }
+app.get("/feed", async (req, res) => {
+  const users = await User.find({});
+  try {
+    res.send(users);
+  } catch (error) {
+    res.status(404).send("Users not found");
+  }
 });
 
-app.get("/userbyid", async (req,res)=> {
-    const user_id = "68a0ba188f2a143893ec7be6"
-    const users = await User.findById(user_id);
-    try {
-        res.send(users);
-    } catch (error) {
-        res.status(404).send("Users not found");
-    }
+app.get("/userbyid", async (req, res) => {
+  const user_id = "68a0ba188f2a143893ec7be6";
+  const users = await User.findById(user_id);
+  try {
+    res.send(users);
+  } catch (error) {
+    res.status(404).send("Users not found");
+  }
 });
 
-app.delete("/deleteuser", async (req,res)=> {
-    const user_id = req.body._id;
-    const users = await User.findByIdAndDelete(user_id);
-    try {
-        res.send("User deleted Successfully");
-    } catch (error) {
-        res.status(404).send("Users not found");
-    }
+app.delete("/deleteuser", async (req, res) => {
+  const user_id = req.body._id;
+  const users = await User.findByIdAndDelete(user_id);
+  try {
+    res.send("User deleted Successfully");
+  } catch (error) {
+    res.status(404).send("Users not found");
+  }
 });
 
-app.patch("/update", async (req,res)=>{
-    const user_id = req.body._id;
-    const data = req.body;
-    await User.findByIdAndUpdate({_id: user_id}, data, { runValidators : true });
-    try {
-        res.send("User data updated Successfully");
-    } catch (error) {
-        res.status(400).send("UPDATE FAILED : " + err.message);
+app.patch("/update/:userId", async (req, res) => {
+  const userId = req.params?.userId;
+  const data = req.body;
+
+  try {
+    const Allowed_Updates = ["firstName", "lastName", "gender", "skills", "age"];
+
+    const isAllowed_Updates = Object.keys(data).every((k) =>
+      Allowed_Updates.includes(k)
+    );
+
+    if (!isAllowed_Updates) {
+      throw new Error("Update is not allowed");
     }
+
+    const user = await User.findByIdAndUpdate(
+      { _id: userId },
+      data,
+      { runValidators: true }
+    );
+
+    res.send("User data updated Successfully");
+  } catch (error) {
+    res.status(400).send("UPDATE FAILED : " + error.message);
+  }
 });
 
 
