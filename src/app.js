@@ -48,13 +48,24 @@ app.get("/userbyid", async (req,res)=> {
     }
 });
 
-app.get("/deleteuser", async (req,res)=> {
-    const user_id = "68a0ba188f2a143893ec7be6"
-    const users = await User.findById(user_id);
+app.delete("/deleteuser", async (req,res)=> {
+    const user_id = req.body._id;
+    const users = await User.findByIdAndDelete(user_id);
     try {
         res.send("User deleted Successfully");
     } catch (error) {
         res.status(404).send("Users not found");
+    }
+});
+
+app.patch("/update", async (req,res)=>{
+    const user_id = req.body._id;
+    const data = req.body;
+    await User.findByIdAndUpdate({_id: user_id}, data);
+    try {
+        res.send("User data updated Successfully");
+    } catch (error) {
+        res.status(401).send("Unable to update the user");
     }
 });
 
