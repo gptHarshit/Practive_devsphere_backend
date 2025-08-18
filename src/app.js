@@ -64,7 +64,14 @@ app.patch("/update/:userId", async (req, res) => {
   const data = req.body;
 
   try {
-    const Allowed_Updates = ["firstName", "lastName", "gender", "skills", "age"];
+    const Allowed_Updates = [
+      "firstName",
+      "lastName",
+      "gender",
+      "skills",
+      "age",
+      "password",
+    ];
 
     const isAllowed_Updates = Object.keys(data).every((k) =>
       Allowed_Updates.includes(k)
@@ -74,18 +81,15 @@ app.patch("/update/:userId", async (req, res) => {
       throw new Error("Update is not allowed");
     }
 
-    const user = await User.findByIdAndUpdate(
-      { _id: userId },
-      data,
-      { runValidators: true }
-    );
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      runValidators: true,
+    });
 
     res.send("User data updated Successfully");
   } catch (error) {
     res.status(400).send("UPDATE FAILED : " + error.message);
   }
 });
-
 
 connectDB()
   .then(() => {
