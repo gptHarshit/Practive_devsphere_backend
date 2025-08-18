@@ -38,6 +38,26 @@ app.get("/feed", async (req,res)=> {
     }
 });
 
+app.get("/userbyid", async (req,res)=> {
+    const user_id = "68a0ba188f2a143893ec7be6"
+    const users = await User.findById(user_id);
+    try {
+        res.send(users);
+    } catch (error) {
+        res.status(404).send("Users not found");
+    }
+});
+
+app.get("/deleteuser", async (req,res)=> {
+    const user_id = "68a0ba188f2a143893ec7be6"
+    const users = await User.findById(user_id);
+    try {
+        res.send("User deleted Successfully");
+    } catch (error) {
+        res.status(404).send("Users not found");
+    }
+});
+
 
 connectDB()
   .then(() => {
