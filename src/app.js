@@ -13,7 +13,7 @@ app.post("/signup", async (req, res) => {
     // validation of data
     validateSignUpData(req);
     // password encryption
-    const { firstName, lastName, emailId, password } = req.body; 
+    const { firstName, lastName, emailId, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
     console.log(passwordHash);
 
@@ -28,6 +28,25 @@ app.post("/signup", async (req, res) => {
     res.send("User Added Successfully");
   } catch (error) {
     res.status(400).send("ERROR : " + error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid credential");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      res.send("Login Successfully");
+    } else {
+      throw new Error("Invalid credential");
+    }
+  } catch (err) {
+    res.status(400).send("Error : " + err.message);
   }
 });
 
