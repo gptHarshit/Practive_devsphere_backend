@@ -121,6 +121,7 @@
  - Logic for GET /feed API
  - Explore the $nin , $and, $ne and other query operatorators
  - Pagination
+ - Doing Furthure plannig for future
 
 
 
