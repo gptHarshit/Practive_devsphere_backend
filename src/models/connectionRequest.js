@@ -21,10 +21,16 @@ const connectionRequestSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-connectionRequestSchema.pre("save" , function (next) {
+// compound indexing :-
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+// this is the pre save method that is being used to check anything just before save
+connectionRequestSchema.pre("save", function (next) {
   const connectionRequest = this;
-  if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
-    throw new Error("You are not allowed to send connection request to yourself!!"); 
+  if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+    throw new Error(
+      "You are not allowed to send connection request to yourself!!"
+    );
   }
   next();
 });
