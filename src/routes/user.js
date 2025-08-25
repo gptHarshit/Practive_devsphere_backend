@@ -1,6 +1,7 @@
 const express = require("express");
 const connectionRequest = require("../models/connectionRequest");
 const { userAuth } = require("../middlewares/auth");
+const User = require("../models/user");
 
 const userRouter = express.Router();
 
@@ -25,7 +26,16 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
     res.status(400).send("ERROR : " + error.message);
   }
 });
-
+const USER_SAFE_DATA = [
+  "firstName",
+  "lastName",
+  "photoUrl",
+  "age",
+  "about",
+  "gender",
+  "skills",
+];
+//console.log(USER_SAFE_DATA);
 //a bug can be in this api ,be carefull if any bug appear so make sure to check this API
 userRouter.get("/user/connection", userAuth, async (req, res) => {
   try {
@@ -37,29 +47,13 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
           { fromUserId: loggedInUser._id, status: "accepted" },
         ],
       })
-      .populate("fromUserId", [
-        "firstName",
-        "lastName",
-        "photoUrl",
-        "age",
-        "about",
-        "gender",
-        "skills",
-      ])
-      .populate("toUserId", [
-        "firstName",
-        "lastName",
-        "photoUrl",
-        "age",
-        "about",
-        "gender",
-        "skills",
-      ]);
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
     const data = Connection.map((row) => {
       if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return row.toUserId;
       } else {
-        return row.fromUserId; 
+        return row.fromUserId;
       }
     });
     res.json({
@@ -68,6 +62,35 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
     });
   } catch (error) {
     res.status(400).send("ERROR : - " + error.message);
+  }
+});
+
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const connectionRequests = await connectionRequest
+      .find({
+        $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+      })
+      .select("fromUserId toUserId");
+
+    const hideUserFromFeed = new Set();
+    connectionRequests.forEach((req) => {
+      hideUserFromFeed.add(req.fromUserId.toString());
+      hideUserFromFeed.add(req.toUserId.toString());
+    });
+   // console.log(hideUserFromFeed);
+
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUserFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_SAFE_DATA);
+
+    res.send(users);
+  } catch (error) {
+    res.status(400).send("ERROR : " + error.message);
   }
 });
 
