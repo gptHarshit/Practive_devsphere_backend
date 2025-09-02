@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
     photoUrl: {
       type: String,
       default:
-        "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+        "https://www.pngarts.com/files/3/Avatar-Free-PNG-Image.png",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("photoUrl is not valid");

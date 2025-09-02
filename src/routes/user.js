@@ -25,6 +25,7 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
     res.status(400).send("ERROR : " + error.message);
   }
 });
+
 const USER_SAFE_DATA = [
   "firstName",
   "lastName",
@@ -37,6 +38,7 @@ const USER_SAFE_DATA = [
 //a bug can be in this api ,be carefull if any bug appear so make sure to check this API
 userRouter.get("/user/connection", userAuth, async (req, res) => {
   try {
+   
     const loggedInUser = req.user;
     const Connection = await connectionRequest
       .find({
@@ -47,13 +49,14 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
       })
       .populate("fromUserId", USER_SAFE_DATA)
       .populate("toUserId", USER_SAFE_DATA);
+
     const data = Connection.map((row) => {
-      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+      if (row.fromUserId &&  row.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return row.toUserId;
       } else {
         return row.fromUserId;
       }
-    });
+    }).filter(Boolean);
     res.json({
       message: "Connection that " + loggedInUser.firstName + " have are :- ",
       data,
@@ -62,6 +65,7 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
     res.status(400).send("ERROR : - " + error.message);
   }
 });
+// added the above .filter(Boolean); this line using chat gpt
 
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {
@@ -91,7 +95,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       ],
     }).select(USER_SAFE_DATA).skip(skip).limit(limit);
 
-    res.send(users);
+    res.json({data : users});
   } catch (error) {
     res.status(400).send("ERROR : " + error.message);
   }

@@ -28,7 +28,7 @@ requestRouter.post(
           { fromUserId: toUserId, toUserId: fromUserId },
         ],
       });
-      //console.log(existingConnectionRequest);
+
       if (existingConnectionRequest) {
         return res
           .status(400)
