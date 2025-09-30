@@ -25,6 +25,12 @@ const initializeSocket = (server) => {
     socket.on("sendMessage", ({ firstName, userId, targetUserId, text }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
       console.log(firstName + "  " + text);
+      // saving mess to the database
+      try {
+        
+      } catch (error) {
+        console.log(error);
+      }
       io.to(roomId).emit("messageReceived", { firstName, text });
     });
 
