@@ -29,6 +29,7 @@ const server = http.createServer(app);
 
 initializeSocket(server);
 
+
 connectDB()
   .then(() => {
     console.log("Database Connection Established Successfully");
