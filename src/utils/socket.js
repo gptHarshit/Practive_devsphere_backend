@@ -28,6 +28,8 @@ const initializeSocket = (server) => {
       async ({ firstName,lastName, userId, targetUserId, text }) => {
         // saving mess to the database
         try {
+            // check here that if to user id and from user id must be a friends okk samjh aaya
+            //------------------------------------
           const roomId = getSecretRoomId(userId, targetUserId);
           console.log(firstName + "  " + text);
           let chat = await Chat.findOne({
