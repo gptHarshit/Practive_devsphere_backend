@@ -1,3 +1,67 @@
+// const socket = require("socket.io");
+// const crypto = require("crypto");
+// const { Chat } = require("../models/chat");
+
+// const getSecretRoomId = (userId, targetUserId) => {
+//   return crypto
+//     .createHash("sha256")
+//     .update([userId, targetUserId].sort().join("_"))
+//     .digest("hex");
+// };
+
+// const initializeSocket = (server) => {
+//   const io = socket(server, {
+//     cors: {
+//       origin: "http://localhost:5173",
+//     },
+//   });
+
+//   io.on("connection", (socket) => {
+//     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
+//       const roomId = getSecretRoomId(userId, targetUserId);
+//       socket.join(roomId);
+//     });
+
+//     socket.on(
+//       "sendMessage",
+//       async ({ firstName,lastName, userId, targetUserId, text }) => {
+//         // saving mess to the database
+//         try {
+//             // check here that if to user id and from user id must be a friends okk samjh aaya
+//             //------------------------------------
+//           const roomId = getSecretRoomId(userId, targetUserId);
+          
+//           let chat = await Chat.findOne({
+//             participants: { $all: [userId, targetUserId] },
+//           });
+
+//           if (!chat) {
+//             chat = new Chat({
+//               participants: [userId, targetUserId],
+//               messages: [],
+//             });
+//           }
+
+//           chat.messages.push({
+//             senderId: userId,
+//             text,
+//           });
+
+//           await chat.save();
+
+//           io.to(roomId).emit("messageReceived", { firstName,lastName, text });
+//         } catch (error) {
+//           console.log(error);
+//         }
+//       }
+//     );
+
+//     socket.on("disconnect", () => {});
+//   });
+// };
+
+// module.exports = initializeSocket;
+
 const socket = require("socket.io");
 const crypto = require("crypto");
 const { Chat } = require("../models/chat");
@@ -16,22 +80,25 @@ const initializeSocket = (server) => {
     },
   });
 
+
+  const onlineUsers = new Map();
+
   io.on("connection", (socket) => {
+    // console.log("User connected:", socket.id);
+
     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(firstName + " Joined Room : " + roomId);
       socket.join(roomId);
+      onlineUsers.set(userId, socket.id);
+      socket.to(roomId).emit("userOnline", { userId });
     });
 
     socket.on(
       "sendMessage",
-      async ({ firstName,lastName, userId, targetUserId, text }) => {
-        // saving mess to the database
+      async ({ firstName, lastName, userId, targetUserId, text }) => {
         try {
-            // check here that if to user id and from user id must be a friends okk samjh aaya
-            //------------------------------------
           const roomId = getSecretRoomId(userId, targetUserId);
-          console.log(firstName + "  " + text);
+          
           let chat = await Chat.findOne({
             participants: { $all: [userId, targetUserId] },
           });
@@ -43,21 +110,47 @@ const initializeSocket = (server) => {
             });
           }
 
-          chat.messages.push({
+          const newMessage = {
             senderId: userId,
             text,
+          };
+
+          chat.messages.push(newMessage);
+          await chat.save();
+          io.to(roomId).emit("messageReceived", { 
+            firstName, 
+            lastName, 
+            text,
+            senderId: userId,
+            timestamp: newMessage.createdAt || new Date()
           });
 
-          await chat.save();
-
-          io.to(roomId).emit("messageReceived", { firstName,lastName, text });
         } catch (error) {
-          console.log(error);
+          console.log("Socket error:", error);
+          socket.emit("messageError", { error: "Message sending failed" });
         }
       }
     );
 
-    socket.on("disconnect", () => {});
+    socket.on("typingStart", ({ userId, targetUserId }) => {
+      const roomId = getSecretRoomId(userId, targetUserId);
+      socket.to(roomId).emit("userTyping", { userId });
+    });
+
+    socket.on("typingStop", ({ userId, targetUserId }) => {
+      const roomId = getSecretRoomId(userId, targetUserId);
+      socket.to(roomId).emit("userStoppedTyping", { userId });
+    });
+
+    socket.on("disconnect", () => {
+      for (let [userId, socketId] of onlineUsers.entries()) {
+        if (socketId === socket.id) {
+          onlineUsers.delete(userId);
+          break;
+        }
+      }
+      console.log("User disconnected:", socket.id);
+    });
   });
 };
 

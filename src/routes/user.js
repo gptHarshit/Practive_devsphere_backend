@@ -28,12 +28,22 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
 
 const USER_SAFE_DATA = [
   "firstName",
-  "lastName",
+  "lastName", 
   "photoUrl",
   "age",
-  "about",
+  "about", 
   "gender",
   "skills",
+  // NAYE FIELDS ADD KARO
+  "projects",
+  "certificates", 
+  "codingProfiles",
+  "codingPlatforms",
+  "contributions",
+   "professionalStatus",
+  "institution", 
+  "role",
+  "portfolioLink",
 ];
 //a bug can be in this api ,be carefull if any bug appear so make sure to check this API
 userRouter.get("/user/connection", userAuth, async (req, res) => {

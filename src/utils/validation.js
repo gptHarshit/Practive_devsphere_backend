@@ -38,7 +38,19 @@ const validationforUpdatedata = async (req) => {
     "photoUrl",
     "gender",
     "age",
+    "projects",
+    "certificates",
+    "codingProfiles",
+    "codingPlatforms",
+    "contributions",
+    "professionalStatus",
+    "institution",
+    "role",
+    "portfolioLink",
   ];
+
+  console.log("🔍 Validation Check - Received fields:", Object.keys(req.body));
+  console.log("🔍 Validation Check - Allowed fields:", AllowedToUpdate);
 
   const isAllowedToUpdate = Object.keys(req.body).every((field) =>
     AllowedToUpdate.includes(field)
