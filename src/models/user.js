@@ -174,20 +174,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-portfolioLink: {
-  type: String,
-  default: "",
-  validate(value) {
-    if (!value || value.trim() === "") return true; // Empty allowed
-    
-    if (!validator.isURL(value, {
-      require_protocol: true, // Force http:// or https://
-      require_valid_protocol: true
-    })) {
-      throw new Error("Portfolio link must start with http:// or https://");
-    }
-  },
-},
+    portfolioLink: {
+      type: String,
+      default: "",
+      validate(value) {
+        if (!value || value.trim() === "") return true; // Empty allowed
+
+        if (
+          !validator.isURL(value, {
+            require_protocol: true, // Force http:// or https://
+            require_valid_protocol: true,
+          })
+        ) {
+          throw new Error("Portfolio link must start with http:// or https://");
+        }
+      },
+    },
 
     // NEW FIELDS ADDED FOR ENHANCED PROFILE
     projects: [
@@ -210,28 +212,52 @@ portfolioLink: {
         githubLink: {
           type: String,
           default: "",
-          validate(value) {
-            if (value && !validator.isURL(value)) {
-              throw new Error("GitHub link is not valid");
-            }
-          },
+          // validate(value) {
+          //   // ✅ EMPTY STRINGS ALLOW KARO
+          //   if (!value || value.trim() === "") {
+          //     return true;
+          //   }
+
+          //   // ✅ ONLY VALIDATE IF VALUE EXISTS
+          //   if (
+          //     !validator.isURL(value, {
+          //       require_protocol: true,
+          //       require_valid_protocol: true,
+          //     })
+          //   ) {
+          //     throw new Error("GitHub link is not valid");
+          //   }
+          //   return true;
+          // },
         },
         liveLink: {
           type: String,
           default: "",
           validate(value) {
-            if (value && !validator.isURL(value)) {
+            if (!value || value.trim() === "") {
+              return true;
+            }
+            if (!validator.isURL(value)) {
               throw new Error("Live demo link is not valid");
             }
+            return true;
           },
         },
         image: {
           type: String,
           default: "",
           validate(value) {
-            if (value && !validator.isURL(value)) {
+            if (typeof value !== "string") return false;
+            if (value.trim() === "") return true; // Allow empty string
+            if (
+              !validator.isURL(value, {
+                require_protocol: true,
+                require_valid_protocol: true,
+              })
+            ) {
               throw new Error("Project image URL is not valid");
             }
+            return true;
           },
         },
       },
