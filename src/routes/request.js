@@ -142,7 +142,7 @@ module.exports = requestRouter;
 //       });
 //       const data = await connectionRequest.save();
 
-//       // ✅ UPDATED: SEND DYNAMIC EMAIL ONLY FOR "INTERESTED" STATUS
+
 //       if (status === "interested") {
 //         try {
 //           await sendDynamicEmail(toUser.emailId, "connectionRequest", {
@@ -151,9 +151,9 @@ module.exports = requestRouter;
 //             senderMessage: `I'm interested in connecting with you on DevSphere!`,
 //             profileLink: `https://your-devsphere-app.com/profile/${req.user._id}`
 //           });
-//           console.log(`✅ Connection email sent to ${toUser.emailId}`);
+//           console.log(`Connection email sent to ${toUser.emailId}`);
 //         } catch (emailError) {
-//           console.error("❌ Email sending failed:", emailError);
+//           console.error(" Email sending failed:", emailError);
 //           // Don't fail the request if email fails
 //         }
 //       }
@@ -196,7 +196,7 @@ module.exports = requestRouter;
 //       connectionRequest.status = status;
 //       const data = await connectionRequest.save();
       
-//       // ✅ OPTIONAL: SEND EMAIL WHEN REQUEST IS ACCEPTED
+
 //       if (status === "accepted") {
 //         try {
 //           const fromUser = await User.findById(connectionRequest.fromUserId);
@@ -206,9 +206,9 @@ module.exports = requestRouter;
 //             senderMessage: `I've accepted your connection request on DevSphere! Let's connect.`,
 //             profileLink: `https://your-devsphere-app.com/profile/${loggedInUser._id}`
 //           });
-//           console.log(`✅ Acceptance email sent to ${fromUser.emailId}`);
+//           console.log(` Acceptance email sent to ${fromUser.emailId}`);
 //         } catch (emailError) {
-//           console.error("❌ Acceptance email failed:", emailError);
+//           console.error(" Acceptance email failed:", emailError);
 //         }
 //       }
 

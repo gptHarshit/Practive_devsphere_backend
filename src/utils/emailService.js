@@ -99,10 +99,10 @@ const sendDynamicEmail = async (toEmail, emailType, data = {}) => {
 
   try {
     const result = await sesClient.send(sendEmailCommand);
-    console.log(`✅ Email sent to ${toEmail} - Type: ${emailType}`);
+    //console.log(`Email sent to ${toEmail} - Type: ${emailType}`);
     return result;
   } catch (error) {
-    console.error("❌ SES Send Error:", error);
+    console.error("SES Send Error:", error);
     throw error;
   }
 };

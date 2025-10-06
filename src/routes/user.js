@@ -34,7 +34,6 @@ const USER_SAFE_DATA = [
   "about", 
   "gender",
   "skills",
-  // NAYE FIELDS ADD KARO
   "projects",
   "certificates", 
   "codingProfiles",
@@ -75,7 +74,7 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
     res.status(400).send("ERROR : - " + error.message);
   }
 });
-// added the above .filter(Boolean); this line using chat gpt
+
 
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {

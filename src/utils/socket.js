@@ -1,67 +1,3 @@
-// const socket = require("socket.io");
-// const crypto = require("crypto");
-// const { Chat } = require("../models/chat");
-
-// const getSecretRoomId = (userId, targetUserId) => {
-//   return crypto
-//     .createHash("sha256")
-//     .update([userId, targetUserId].sort().join("_"))
-//     .digest("hex");
-// };
-
-// const initializeSocket = (server) => {
-//   const io = socket(server, {
-//     cors: {
-//       origin: "http://localhost:5173",
-//     },
-//   });
-
-//   io.on("connection", (socket) => {
-//     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
-//       const roomId = getSecretRoomId(userId, targetUserId);
-//       socket.join(roomId);
-//     });
-
-//     socket.on(
-//       "sendMessage",
-//       async ({ firstName,lastName, userId, targetUserId, text }) => {
-//         // saving mess to the database
-//         try {
-//             // check here that if to user id and from user id must be a friends okk samjh aaya
-//             //------------------------------------
-//           const roomId = getSecretRoomId(userId, targetUserId);
-          
-//           let chat = await Chat.findOne({
-//             participants: { $all: [userId, targetUserId] },
-//           });
-
-//           if (!chat) {
-//             chat = new Chat({
-//               participants: [userId, targetUserId],
-//               messages: [],
-//             });
-//           }
-
-//           chat.messages.push({
-//             senderId: userId,
-//             text,
-//           });
-
-//           await chat.save();
-
-//           io.to(roomId).emit("messageReceived", { firstName,lastName, text });
-//         } catch (error) {
-//           console.log(error);
-//         }
-//       }
-//     );
-
-//     socket.on("disconnect", () => {});
-//   });
-// };
-
-// module.exports = initializeSocket;
-
 const socket = require("socket.io");
 const crypto = require("crypto");
 const { Chat } = require("../models/chat");
@@ -80,7 +16,6 @@ const initializeSocket = (server) => {
     },
   });
 
-
   const onlineUsers = new Map();
 
   io.on("connection", (socket) => {
@@ -98,7 +33,7 @@ const initializeSocket = (server) => {
       async ({ firstName, lastName, userId, targetUserId, text }) => {
         try {
           const roomId = getSecretRoomId(userId, targetUserId);
-          
+
           let chat = await Chat.findOne({
             participants: { $all: [userId, targetUserId] },
           });
@@ -117,14 +52,13 @@ const initializeSocket = (server) => {
 
           chat.messages.push(newMessage);
           await chat.save();
-          io.to(roomId).emit("messageReceived", { 
-            firstName, 
-            lastName, 
+          io.to(roomId).emit("messageReceived", {
+            firstName,
+            lastName,
             text,
             senderId: userId,
-            timestamp: newMessage.createdAt || new Date()
+            timestamp: newMessage.createdAt || new Date(),
           });
-
         } catch (error) {
           console.log("Socket error:", error);
           socket.emit("messageError", { error: "Message sending failed" });
@@ -149,7 +83,7 @@ const initializeSocket = (server) => {
           break;
         }
       }
-      console.log("User disconnected:", socket.id);
+      //console.log("User disconnected:", socket.id);
     });
   });
 };

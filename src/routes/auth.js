@@ -27,15 +27,15 @@ const bcrypt = require("bcrypt");
 //       expires: new Date(Date.now() + 8 * 3600000),
 //     });
 
-//     // ✅ ADD WELCOME EMAIL (NON-BLOCKING)
+
 //     try {
 //       await sendDynamicEmail(savedUser.emailId, "welcome", {
 //         userName: `${savedUser.firstName} ${savedUser.lastName}`
 //       });
-//       console.log(`✅ Welcome email sent to ${savedUser.emailId}`);
+//       console.log(` Welcome email sent to ${savedUser.emailId}`);
 //     } catch (emailError) {
-//       console.error("❌ Welcome email failed:", emailError);
-//       // Don't fail signup if email fails
+//       console.error(" Welcome email failed:", emailError);
+
 //     }
 
 //     res.json({ message: "User Added Successfully", data: savedUser });
